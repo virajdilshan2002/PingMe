@@ -1,0 +1,37 @@
+import { db } from "@/firebase"
+import { Message } from "@/types/message"
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  updateDoc
+} from "firebase/firestore"
+
+export const messageColRef = collection(db, "messages")
+
+export const createMessage = async (message: Message) => {
+  const docRef = await addDoc(messageColRef, message)
+  return docRef.id
+}
+
+export const updateMessage = async (id: string, message: Message) => {
+  const docRef = doc(db, "messages", id)
+  const { id: _id, ...messageData } = message
+  return await updateDoc(docRef, messageData)
+}
+
+export const deleteMessage = async (id: string) => {
+  const docRef = doc(db, "messages", id)
+  return await deleteDoc(docRef)
+}
+
+export const getAllMessageData = async () => {
+  const snapshot = await getDocs(messageColRef)
+  const messageList = snapshot.docs.map((messageRef) => ({
+    id: messageRef.id,
+    ...messageRef.data()
+  })) as Message[]
+  return messageList
+}

@@ -1,19 +1,28 @@
-import { useRouter } from 'expo-router'
-import React from 'react'
-import { Pressable, Text, View } from 'react-native'
-import "../global.css"
+import { useAuth } from "@/context/AuthContext"
+import { useRouter } from "expo-router"
+import React, { useEffect } from "react"
+import { ActivityIndicator, View } from "react-native"
 
-const index = () => {
+const Index = () => {
   const router = useRouter()
+  const { user, loading } = useAuth()
+  console.log("User Data : ", user)
 
-  return (
-    <View className='flex-1 w-full items-center justify-center'>
-      <Text className='text-2xl font-bold'>index</Text>
-      <Pressable onPress={() => router.push("/home")}>
-        <Text className='text-blue-500'>Go to Dashboard</Text>
-      </Pressable>
+  useEffect(() => {
+    if (!loading) {
+      if (user) {
+        router.push("/home")
+      } else {
+        router.push("/login")
+      }
+    }
+  }, [user, loading])
+
+  return loading ? (
+    <View className="flex-1 w-full justify-center align-items-center">
+      <ActivityIndicator size="large" />
     </View>
-  )
+  ) : null
 }
 
-export default index
+export default Index
