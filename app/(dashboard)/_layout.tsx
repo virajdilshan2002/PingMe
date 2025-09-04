@@ -58,6 +58,7 @@ const DashboardLayout = () => {
           }}
         />
       </Tabs>
+
     </SafeAreaView>
   )
 }
