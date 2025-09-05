@@ -9,7 +9,6 @@ const Index = () => {
   const { user, loading } = useAuth()
   console.log("User Data : ", user)
 
-
   useEffect(() => {
     if (!loading) {
       if (user) {

@@ -6,6 +6,7 @@ import {
   signOut
 } from "firebase/auth"
 import { Alert } from "react-native"
+import { createDefaultProfile } from "./userProfileService"
 
 export const login = (email: string, password: string) => {
   return signInWithEmailAndPassword(auth, email, password)
@@ -18,6 +19,8 @@ export const logout = () => {
 export const register = async (email: string, password: string) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password)
     const user = userCredential.user
+
+    await createDefaultProfile(user.uid, email)
 
     await sendEmailVerification(user).then(() => {
       Alert.alert(

@@ -19,9 +19,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
-   
     const unsubcribe = onAuthStateChanged(auth, (user) => {
-       console.log("In Auth user data", user)
       setUser(user ?? null)
       setLoading(false)
     })
