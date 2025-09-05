@@ -1,7 +1,9 @@
+"use client"
+
 import { useAuth } from "@/context/AuthContext"
 import { saveProfileImageUrl, uploadProfileImage } from "@/services/imageService"
 import { fetchProfile, updateProfile } from "@/services/userProfileService"
-import { Profile } from "@/types/profile"
+import type { Profile } from "@/types/profile"
 import { Feather } from "@expo/vector-icons"
 import * as ImagePicker from "expo-image-picker"
 import * as MediaLibrary from "expo-media-library"
@@ -14,6 +16,7 @@ const ProfileScreen = () => {
   const [profileData, setProfileData] = useState<Profile | null>(null)
   const [mediaPermission, requestMediaPermission] = MediaLibrary.usePermissions()
   const [photo, setPhoto] = useState<any>(null)
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
 
   // Fetch profile when user changes
   useEffect(() => {
@@ -43,22 +46,6 @@ const ProfileScreen = () => {
     }
   }
 
-  // if (!mediaPermission?.granted) {
-  //   return (
-  //     <View className="flex-1 items-center justify-center bg-white">
-  //       <Text className="text-center mb-3 text-lg text-gray-700">
-  //         We need permision to save photo to your gallery
-  //       </Text>
-  //       <TouchableOpacity
-  //         onPress={requestMediaPermission}
-  //         className="items-center bg-black/50 rounded-xl py-3 px-3"
-  //       >
-  //         <Text className="text-white text-xl font-bold">Grant Permission</Text>
-  //       </TouchableOpacity>
-  //     </View>
-  //   )
-  // }
-
   const handleImagePicker = async () => {
     const permisionRes = await ImagePicker.requestMediaLibraryPermissionsAsync()
 
@@ -71,7 +58,7 @@ const ProfileScreen = () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      quality: 1
+      quality: 1,
     })
 
     if (result.canceled) return
@@ -83,31 +70,45 @@ const ProfileScreen = () => {
         Alert.alert("Error", "User not found")
         return
       }
-      const url = await uploadProfileImage(imageUri, user.uid)   
-      await saveProfileImageUrl(user.uid, url)               
 
-      setProfileData((prev) => prev ? { ...prev, profileImage: url } : prev)
+      setIsUploadingImage(true)
+
+      const url = await uploadProfileImage(imageUri, user.uid)
+      await saveProfileImageUrl(user.uid, url)
+
+      setProfileData((prev) => (prev ? { ...prev, profileImage: url } : prev))
     } catch (error) {
       console.log(error)
       Alert.alert("Error", "Failed to upload image")
+    } finally {
+      setIsUploadingImage(false)
     }
   }
 
   const updateField = (field: keyof Profile, value: string) => {
-    setProfileData((prev) => prev ? { ...prev, [field]: value } : prev)
+    setProfileData((prev) => (prev ? { ...prev, [field]: value } : prev))
   }
 
   if (!profileData || loading) {
-      return (
-        <View className="flex-1 w-full justify-center align-items-center">
-          <ActivityIndicator size="large" />
-        </View>
-      )
-    }
+    return (
+      <View className="flex-1 w-full justify-center align-items-center">
+        <ActivityIndicator size="large" />
+      </View>
+    )
+  }
 
   return (
-    <ScrollView className="flex-1 bg-gray-50">
-      <View className="bg-white">
+    <ScrollView className="flex-1 min-h-screen-safe bg-white">
+      {isUploadingImage && (
+        <View className="absolute w-screen h-screen inset-0 bg-black/50 z-50 flex-1 justify-center items-center">
+          <View className="bg-white rounded-xl p-6 items-center">
+            <ActivityIndicator size="large" color="#059669" />
+            <Text className="text-gray-900 font-medium mt-3">Uploading image...</Text>
+          </View>
+        </View>
+      )}
+
+      <View className="flex-1">
         {/* Header */}
         <View className="flex-row items-center justify-between p-4 pt-12">
           <TouchableOpacity>
@@ -122,14 +123,14 @@ const ProfileScreen = () => {
         {/* Profile Image Section */}
         <View className="items-center py-6">
           <View className="relative">
-            <Image
-              source={{ uri: profileData.profileImage }}
-              className="w-24 h-24 rounded-full"
-            />
+            <Image source={{ uri: profileData.profileImage }} className="w-24 h-24 rounded-full" />
             {isEditing && (
               <TouchableOpacity
                 onPress={handleImagePicker}
-                className="absolute -bottom-1 -right-1 bg-emerald-600 rounded-full p-2"
+                disabled={isUploadingImage}
+                className={`absolute -bottom-1 -right-1 rounded-full p-2 ${
+                  isUploadingImage ? "bg-gray-400" : "bg-emerald-600"
+                }`}
               >
                 <Feather name="camera" size={16} color="white" />
               </TouchableOpacity>
@@ -159,7 +160,6 @@ const ProfileScreen = () => {
               <Text className="text-gray-900 py-3">{profileData.name}</Text>
             )}
           </View>
-
         </View>
       </View>
 
