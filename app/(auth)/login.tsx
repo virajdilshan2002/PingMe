@@ -31,7 +31,7 @@ const Login = () => {
       return
     }
     
-    router.push("/home")
+    router.push("/chats")
   } catch (err: any) {
     console.error("Login error:", err)
 
@@ -64,30 +64,30 @@ const Login = () => {
 
         <View className="space-y-4">
           <View>
-            <Text className="text-sm font-medium text-foreground mb-2">Email</Text>
+            {/* <Text className="text-sm font-medium text-foreground mb-2">Email</Text> */}
             <TextInput
               placeholder="Enter your email"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
               autoCapitalize="none"
-              className="bg-input border border-border rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20"
+              className="bg-input border-2 text-center border-orange-200 rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-orange-300"
             />
           </View>
 
           <View className="mt-4">
-            <Text className="text-sm font-medium text-foreground mb-2">Password</Text>
+            {/* <Text className="text-sm font-medium text-foreground mb-2">Password</Text> */}
             <View className="relative flex-row items-center">
               <TextInput
                 placeholder="Enter your password"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
-                className="bg-input border w-full border-border rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20"
+              className="bg-input border-2 w-full text-center border-orange-200 rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-orange-300"
               />
-              <TouchableOpacity className="absolute right-4" onPress={() => setShowPassword(!showPassword)}>
+              <TouchableOpacity className="absolute right-3" onPress={() => setShowPassword(!showPassword)}>
                 <Ionicons
-                  className="bg-zinc-200 rounded-full p-1 "
+                  className="bg-zinc-100 rounded-full p-1"
                   name={showPassword ? "eye-off" : "eye"}
                   size={22}
                   color="#666"
@@ -106,7 +106,7 @@ const Login = () => {
         >
           {isLoading ? (
             <View className="flex-row items-center justify-center">
-              <ActivityIndicator color="#ffffff" size="small" />
+              <ActivityIndicator color="orange" size="small" />
               <Text className="text-primary-foreground font-semibold text-base ml-2">Signing in...</Text>
             </View>
           ) : (

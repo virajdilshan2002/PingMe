@@ -2,16 +2,18 @@ import { useAuth } from "@/context/AuthContext"
 import { useRouter } from "expo-router"
 import React, { useEffect } from "react"
 import { ActivityIndicator, View } from "react-native"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 const Index = () => {
   const router = useRouter()
   const { user, loading } = useAuth()
   console.log("User Data : ", user)
 
+
   useEffect(() => {
     if (!loading) {
       if (user) {
-        router.push("/home")
+        router.push("/chats")
       } else {
         router.push("/login")
       }

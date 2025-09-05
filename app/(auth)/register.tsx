@@ -1,5 +1,3 @@
-"use client"
-
 import { register } from "@/services/authService"
 import { useRouter } from "expo-router"
 import { useState } from "react"
@@ -51,48 +49,48 @@ const Register = () => {
 
         <View className="space-y-4">
           <View>
-            <Text className="text-sm font-medium text-foreground mb-2">Email</Text>
+            {/* <Text className="text-sm font-medium text-foreground mb-2">Email</Text> */}
             <TextInput
               placeholder="Enter your email"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
               autoCapitalize="none"
-              className="bg-input border border-border rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20"
+              className="bg-input border-2 text-center border-orange-200 rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-orange-300"
             />
           </View>
 
-          <View>
+          <View className="mt-4">
             <Text className="text-sm font-medium text-foreground mb-2">Password</Text>
-            <View className="relative">
+            <View className="relative flex-row items-center">
               <TextInput
                 placeholder="Enter your password"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
-                className="bg-input border border-border rounded-lg px-4 py-3 pr-12 text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20"
+              className="bg-input w-full border-2 text-center border-orange-200 rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-orange-300"
               />
-              <TouchableOpacity className="absolute right-3 top-3" onPress={() => setShowPassword(!showPassword)}>
-                <Ionicons name={showPassword ? "eye-off" : "eye"} size={20} color="#666" />
+              <TouchableOpacity className="absolute right-3" onPress={() => setShowPassword(!showPassword)}>
+                <Ionicons className="bg-zinc-100 rounded-full p-1" name={showPassword ? "eye-off" : "eye"} size={20} color="#666" />
               </TouchableOpacity>
             </View>
           </View>
 
-          <View>
+          <View className="mt-2">
             <Text className="text-sm font-medium text-foreground mb-2">Confirm Password</Text>
-            <View className="relative">
+            <View className="relative flex-row items-center">
               <TextInput
                 placeholder="Confirm your password"
                 value={cPassword}
                 onChangeText={setCPassword}
                 secureTextEntry={!showConfirmPassword}
-                className="bg-input border border-border rounded-lg px-4 py-3 pr-12 text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20"
+              className="bg-input w-full border-2 text-center border-orange-200 rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-orange-300"
               />
               <TouchableOpacity
-                className="absolute right-3 top-3"
+                className="absolute right-3"
                 onPress={() => setShowConfirmPassword(!showConfirmPassword)}
               >
-                <Ionicons name={showConfirmPassword ? "eye-off" : "eye"} size={20} color="#666" />
+                <Ionicons className="bg-zinc-100 rounded-full p-1" name={showConfirmPassword ? "eye-off" : "eye"} size={20} color="#666" />
               </TouchableOpacity>
             </View>
           </View>
@@ -107,7 +105,7 @@ const Register = () => {
         >
           {isLoading ? (
             <View className="flex-row items-center justify-center">
-              <ActivityIndicator color="#ffffff" size="small" />
+              <ActivityIndicator color="orange" size="small" />
               <Text className="text-primary-foreground font-semibold text-base ml-2">Creating account...</Text>
             </View>
           ) : (
@@ -115,7 +113,7 @@ const Register = () => {
           )}
         </TouchableOpacity>
 
-        <Pressable className="mt-6 py-2" onPress={() => router.push("../login")}>
+        <Pressable className="mt-6 py-2" onPress={() => router.back()}>
           <Text className="text-center text-muted-foreground">
             Already have an account? <Text className="text-accent font-medium">Sign in</Text>
           </Text>
