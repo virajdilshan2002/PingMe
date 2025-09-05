@@ -6,14 +6,14 @@ import { Feather } from "@expo/vector-icons"
 import * as ImagePicker from "expo-image-picker"
 import * as MediaLibrary from "expo-media-library"
 import { useEffect, useState } from "react"
-import { Alert, Image, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, Image, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native"
 
 const ProfileScreen = () => {
   const { user, loading } = useAuth()
   const [isEditing, setIsEditing] = useState(false)
   const [profileData, setProfileData] = useState<Profile | null>(null)
   const [mediaPermission, requestMediaPermission] = MediaLibrary.usePermissions()
-    const [photo, setPhoto] = useState<any>(null)
+  const [photo, setPhoto] = useState<any>(null)
 
   // Fetch profile when user changes
   useEffect(() => {
@@ -23,7 +23,6 @@ const ProfileScreen = () => {
       try {
         const profile = await fetchProfile(user.uid)
         setProfileData(profile)
-        console.log(profile)
       } catch (error) {
         console.log(error)
       }
@@ -63,7 +62,7 @@ const ProfileScreen = () => {
   const handleImagePicker = async () => {
     const permisionRes = await ImagePicker.requestMediaLibraryPermissionsAsync()
 
-    if (!permisionRes.granted) {
+    if (!mediaPermission || !mediaPermission.granted) {
       Alert.alert("Permission", "Permission to access gallery is required!")
       requestMediaPermission()
       return
@@ -85,8 +84,7 @@ const ProfileScreen = () => {
         return
       }
       const url = await uploadProfileImage(imageUri, user.uid)   
-      await saveProfileImageUrl(user.uid, url)  
-      console.log("Image uploaded and URL saved:", url)                
+      await saveProfileImageUrl(user.uid, url)               
 
       setProfileData((prev) => prev ? { ...prev, profileImage: url } : prev)
     } catch (error) {
@@ -99,7 +97,13 @@ const ProfileScreen = () => {
     setProfileData((prev) => prev ? { ...prev, [field]: value } : prev)
   }
 
-  if (!profileData) return loading ? <Text>Loading...</Text> : <Text>No profile data found.</Text>
+  if (!profileData || loading) {
+      return (
+        <View className="flex-1 w-full justify-center align-items-center">
+          <ActivityIndicator size="large" />
+        </View>
+      )
+    }
 
   return (
     <ScrollView className="flex-1 bg-gray-50">

@@ -1,21 +1,36 @@
 import Header from "@/components/Header"
+import { useAuth } from "@/context/AuthContext"
 import { MaterialIcons } from "@expo/vector-icons"
 import * as NavigationBar from 'expo-navigation-bar'
 import { Tabs, useRouter } from "expo-router"
 import { StatusBar } from 'expo-status-bar'
 import React, { useEffect } from "react"
-import { Platform, SafeAreaView } from "react-native"
+import { ActivityIndicator, Platform, SafeAreaView, View } from "react-native"
 
 
 const DashboardLayout = () => {
   const router = useRouter()
+  const { user, loading } = useAuth()
 
    useEffect(() => {
         if (Platform.OS === 'android') {
           NavigationBar.setBackgroundColorAsync('blue');
           NavigationBar.setButtonStyleAsync('dark');
         }
-      }, []);
+
+        if (!loading && !user) {
+          router.push("/login")
+        }
+    }, [user, loading]);
+
+
+  if (loading) {
+    return (
+      <View className="flex-1 w-full justify-center align-items-center">
+        <ActivityIndicator size="large" />
+      </View>
+    )
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-white">

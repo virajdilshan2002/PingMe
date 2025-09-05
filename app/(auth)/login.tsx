@@ -46,7 +46,6 @@ const Login = () => {
       message = "Too many attempts. Try again later."
     }
 
-    // ✅ Show alert properly
     Alert.alert("Login Failed", message, [{ text: "OK" }])
   } finally {
     setIsLoading(false)

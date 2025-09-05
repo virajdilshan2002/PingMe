@@ -6,7 +6,7 @@ export const uploadProfileImage = async (uri: string, uid: string) => {
   const response = await fetch(uri)
   const blob = await response.blob()
 
-  const storageRef = ref(storage, `images/users/${uid}.jpg`)
+  const storageRef = ref(storage, `profileImages/${uid}`)
 
   await uploadBytes(storageRef, blob)
 
@@ -16,5 +16,5 @@ export const uploadProfileImage = async (uri: string, uid: string) => {
 
 export const saveProfileImageUrl = async (uid: string, url: string) => {
   const userRef = doc(db, "users", uid)
-  await updateDoc(userRef, { profileImage: url, updatedAt: serverTimestamp })
+  await updateDoc(userRef, { profileImage: url, updatedAt: serverTimestamp() })
 }

@@ -9,7 +9,6 @@ export default function Header() {
     const insets = useSafeAreaInsets();
 
   const handleNavigation = (route: string) => {
-    console.log(`Navigate to ${route}`)
     setShowDropdown(false)
   }
 
