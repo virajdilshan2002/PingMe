@@ -1,19 +1,18 @@
 import { ChevronRight, Menu, Search, Settings, User } from "lucide-react-native";
 import { useState } from "react";
-import { SafeAreaView, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function Header() {
   const [searchQuery, setSearchQuery] = useState("")
   const [showDropdown, setShowDropdown] = useState(false)
-    const insets = useSafeAreaInsets();
+  
 
   const handleNavigation = (route: string) => {
     setShowDropdown(false)
   }
 
   return (
-    <SafeAreaView style={{ paddingTop: insets.top }} className="bg-card bg-white px-4 pb-5 ">
+    <View className="bg-card bg-white pb-2 ">
       <View className="flex-row items-center justify-between mb-3">
        
         <Text className="text-3xl font-semibold text-orange-400 text-foreground">Ping Me</Text>
@@ -65,6 +64,6 @@ export default function Header() {
           </TouchableOpacity>
         )}
       </View>
-    </SafeAreaView>
+    </View>
   )
 }
