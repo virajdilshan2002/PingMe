@@ -19,8 +19,8 @@ const SettingScreen = () => {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'white' }}>
-      <View className="flex-row items-center justify-between p-4 mt-3">
+    <View className="flex-1 bg-white">
+      <View className="flex-row items-center justify-between p-4 px-6 mt-3">
         <TouchableOpacity onPress={() => { router.back() }}>
           <Feather name="arrow-left" size={24} color="#374151" />
         </TouchableOpacity>

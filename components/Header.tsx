@@ -1,12 +1,24 @@
+import { searchUser } from "@/services/userProfileService";
 import { useRouter } from "expo-router";
 import { ChevronRight, Menu, Search, Settings, User } from "lucide-react-native";
 import { useState } from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function Header() {
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchKeyword, setSearchKeyword] = useState("")
   const [showDropdown, setShowDropdown] = useState(false)
+  const [searchedUser, setSearchedUser] = useState<{ id: string }[]>([])
   const router = useRouter();
+
+  const handleSearchUser = async (keyword: string) => {
+    const data = await searchUser(keyword)
+
+    if (data && data.length > 0) {
+      setSearchedUser(data)
+      Alert.alert("User Found", `Found ${searchedUser} users matching "${keyword}"`);
+    }
+    
+  }
 
   return (
     <View className="bg-card bg-white p-2 pb-3">
@@ -36,7 +48,7 @@ export default function Header() {
                 className="flex-row items-center px-4 py-3"
                 onPress={() => {
                   setShowDropdown(false);
-                  router.push("/(profile)/setting");
+                  router.push("/(profile)/settings");
                 }}
               >
                 <Settings size={18} color="#374151" />
@@ -56,13 +68,14 @@ export default function Header() {
         <TextInput
           className="bg-input border no-underline border-zinc-300 text-zinc-800 rounded-3xl pl-10 pr-4 py-3 text-foreground placeholder:text-muted-foreground"
           placeholder="Search username"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
+          value={searchKeyword}
+          onChangeText={setSearchKeyword}
+          onKeyPress={() => handleSearchUser(searchKeyword)}
           placeholderTextColor="#6b7280"
         />
 
-        {searchQuery.length > 0 && (
-          <TouchableOpacity className="absolute right-4 bg-zinc-200 px-2 rounded-full top-1/2 -translate-y-1/2" onPress={() => setSearchQuery("")}>
+        {searchKeyword.length > 0 && (
+          <TouchableOpacity className="absolute right-4 bg-zinc-200 px-2 rounded-full top-1/2 -translate-y-1/2" onPress={() => setSearchKeyword("")}>
             <Text className="text-muted-foreground text-xl">×</Text>
           </TouchableOpacity>
         )}

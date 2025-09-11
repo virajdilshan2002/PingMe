@@ -101,7 +101,7 @@ const ProfileScreen = () => {
 
       <View className="flex-1">
         {/* Header */}
-        <View className="flex-row items-center justify-between p-4 mt-3">
+        <View className="flex-row items-center justify-between px-6 p-4 mt-3">
           <TouchableOpacity onPress={() => { router.back() }}>
             <Feather name="arrow-left" size={24} color="#374151" />
           </TouchableOpacity>

@@ -1,6 +1,6 @@
 import { Profile } from "@/types/profile"
 import { getAuth } from "firebase/auth"
-import { doc, getDoc, getFirestore, serverTimestamp, setDoc, updateDoc } from "firebase/firestore"
+import { collection, doc, getDoc, getDocs, getFirestore, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore"
 
 const auth = getAuth()
 const db = getFirestore()
@@ -36,4 +36,26 @@ export const createDefaultProfile = async (id: string, email: string) => {
     profileImage: "default_profile.png",
     updatedAt: serverTimestamp()
   })
+}
+
+export const searchUser = async (keyword: string) => {
+  // console.log("Searching for:", keyword)
+  const q1 = query(collection(db, "users"), where("name", "==", keyword))
+  const snap1 = await getDocs(q1)
+
+  // console.log("Query result:", snap1.docs.map((doc) => ({ id: doc.id, ...doc.data() })))
+
+  if (!snap1.empty) {
+    return snap1.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+  }
+
+  // // if not found, search by email
+  // const q2 = query(collection(db, "users"), where("email", "==", keyword))
+  // const snap2 = await getDocs(q2)
+
+  // if (!snap2.empty) {
+  //   return snap2.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+  // }
+
+  return []
 }
