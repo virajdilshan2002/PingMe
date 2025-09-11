@@ -11,11 +11,11 @@ export default function SystemNavigationBar() {
       NavigationBar.setPositionAsync("absolute")
 
       if (theme === "dark") {
-        NavigationBar.setBackgroundColorAsync("#000000") // black
-        NavigationBar.setButtonStyleAsync("light") // white icons
+        NavigationBar.setBackgroundColorAsync("#000000")
+        NavigationBar.setButtonStyleAsync("light")
       } else {
-        NavigationBar.setBackgroundColorAsync("#ffffff") // white
-        NavigationBar.setButtonStyleAsync("dark") // dark icons
+        NavigationBar.setBackgroundColorAsync("#ffffff")
+        NavigationBar.setButtonStyleAsync("dark")
       }
     }
   }, [theme])

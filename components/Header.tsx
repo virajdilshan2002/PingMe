@@ -1,3 +1,4 @@
+import { useRouter } from "expo-router";
 import { ChevronRight, Menu, Search, Settings, User } from "lucide-react-native";
 import { useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -5,15 +6,11 @@ import { Text, TextInput, TouchableOpacity, View } from "react-native";
 export default function Header() {
   const [searchQuery, setSearchQuery] = useState("")
   const [showDropdown, setShowDropdown] = useState(false)
-  
-
-  const handleNavigation = (route: string) => {
-    setShowDropdown(false)
-  }
+  const router = useRouter();
 
   return (
-    <View className="bg-card bg-white pb-2 ">
-      <View className="flex-row items-center justify-between mb-3">
+    <View className="bg-card bg-white p-2 pb-3">
+      <View className="flex-row items-center justify-between mb-2">
        
         <Text className="text-3xl font-semibold text-orange-400 text-foreground">Ping Me</Text>
 
@@ -25,7 +22,10 @@ export default function Header() {
             <View className="absolute z-50 top-12 right-0 bg-white border border-zinc-300 rounded-lg shadow-lg min-w-[160px]">
               <TouchableOpacity
                 className="flex-row items-center px-4 py-3 border-b border-zinc-200"
-                onPress={() => handleNavigation("profile")}
+                onPress={() => {
+                  setShowDropdown(false);
+                  router.push("/(profile)/profile");
+                }}
               >
                 <User size={18} color="#374151" />
                 <Text className="ml-3 text-foreground font-medium flex-1">Profile</Text>
@@ -34,7 +34,10 @@ export default function Header() {
 
               <TouchableOpacity
                 className="flex-row items-center px-4 py-3"
-                onPress={() => handleNavigation("settings")}
+                onPress={() => {
+                  setShowDropdown(false);
+                  router.push("/(profile)/setting");
+                }}
               >
                 <Settings size={18} color="#374151" />
                 <Text className="ml-3 text-foreground font-medium flex-1">Settings</Text>

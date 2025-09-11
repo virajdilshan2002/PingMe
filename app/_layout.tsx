@@ -1,24 +1,18 @@
 import { AuthProvider } from "@/context/AuthContext";
 import { LoaderProvider } from "@/context/LoaderContext";
-import * as NavigationBar from "expo-navigation-bar";
 import { Slot } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect } from "react";
-import { Platform } from "react-native";
+import React from "react";
+import { useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import "./../global.css";
 
 const RootLayout = () => {
-  useEffect(() => {
-    if (Platform.OS === "android") {
-      NavigationBar.setBackgroundColorAsync("#ffffff"); // match your app bg
-      NavigationBar.setButtonStyleAsync("dark");
-    }
-  }, []);
+  const theme = useColorScheme();
 
   return (
-    <SafeAreaView edges={["top", "bottom", "left", "right"]} className="flex-1 bg-white">
-      <StatusBar style="dark" />
+    <SafeAreaView edges={["top", "bottom", "left", "right"]} className={`flex-1 ${theme === "dark" ? "bg-black" : "bg-white"}`}>
+      <StatusBar style={theme === "dark" ? "light" : "dark"} />
       <LoaderProvider>
         <AuthProvider>
           <Slot />

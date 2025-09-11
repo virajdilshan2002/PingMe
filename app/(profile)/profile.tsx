@@ -1,5 +1,3 @@
-"use client"
-
 import { useAuth } from "@/context/AuthContext"
 import { saveProfileImageUrl, uploadProfileImage } from "@/services/imageService"
 import { fetchProfile, updateProfile } from "@/services/userProfileService"
@@ -7,7 +5,8 @@ import type { Profile } from "@/types/profile"
 import { Feather } from "@expo/vector-icons"
 import * as ImagePicker from "expo-image-picker"
 import * as MediaLibrary from "expo-media-library"
-import { useEffect, useState } from "react"
+import { useRouter } from "expo-router"
+import { useCallback, useEffect, useState } from "react"
 import { ActivityIndicator, Alert, Image, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native"
 
 const ProfileScreen = () => {
@@ -17,77 +16,69 @@ const ProfileScreen = () => {
   const [mediaPermission, requestMediaPermission] = MediaLibrary.usePermissions()
   const [photo, setPhoto] = useState<any>(null)
   const [isUploadingImage, setIsUploadingImage] = useState(false)
+  const router = useRouter()
 
-  // Fetch profile when user changes
   useEffect(() => {
-    if (!user) return
-
+    if (!user) return;
+    let isMounted = true;
     const loadProfile = async () => {
       try {
-        const profile = await fetchProfile(user.uid)
-        setProfileData(profile)
+        const profile = await fetchProfile(user.uid);
+        if (isMounted) setProfileData(profile);
       } catch (error) {
-        console.log(error)
+        console.log(error);
+      }
+    };
+    loadProfile();
+    return () => { isMounted = false; };
+  }, [user]);
+
+  const handleSave = useCallback(async () => {
+    if (!user || !profileData) return;
+    try {
+      await updateProfile(user.uid, profileData);
+      setIsEditing(false);
+      alert("Profile updated successfully");
+    } catch (error) {
+      console.log(error);
+    }
+  }, [user, profileData]);
+
+  const handleImagePicker = useCallback(async () => {
+    if (!mediaPermission || !mediaPermission.granted) {
+      const perm = await requestMediaPermission();
+      if (!perm?.granted) {
+        Alert.alert("Permission", "Permission to access gallery is required!");
+        return;
       }
     }
-
-    loadProfile()
-  }, [user])
-
-  const handleSave = async () => {
-    if (!user || !profileData) return
-
-    try {
-      await updateProfile(user.uid, profileData)
-      setIsEditing(false)
-      alert("Profile updated successfully")
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  const handleImagePicker = async () => {
-    const permisionRes = await ImagePicker.requestMediaLibraryPermissionsAsync()
-
-    if (!mediaPermission || !mediaPermission.granted) {
-      Alert.alert("Permission", "Permission to access gallery is required!")
-      requestMediaPermission()
-      return
-    }
-
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 1,
-    })
-
-    if (result.canceled) return
-
-    const imageUri = result.assets[0].uri
-
+    });
+    if (result.canceled) return;
+    const imageUri = result.assets[0].uri;
     try {
       if (!user) {
-        Alert.alert("Error", "User not found")
-        return
+        Alert.alert("Error", "User not found");
+        return;
       }
-
-      setIsUploadingImage(true)
-
-      const url = await uploadProfileImage(imageUri, user.uid)
-      await saveProfileImageUrl(user.uid, url)
-
-      setProfileData((prev) => (prev ? { ...prev, profileImage: url } : prev))
+      setIsUploadingImage(true);
+      const url = await uploadProfileImage(imageUri, user.uid);
+      await saveProfileImageUrl(user.uid, url);
+      setProfileData((prev) => (prev ? { ...prev, profileImage: url } : prev));
     } catch (error) {
-      console.log(error)
-      Alert.alert("Error", "Failed to upload image")
+      console.log(error);
+      Alert.alert("Error", "Failed to upload image");
     } finally {
-      setIsUploadingImage(false)
+      setIsUploadingImage(false);
     }
-  }
+  }, [mediaPermission, requestMediaPermission, user]);
 
-  const updateField = (field: keyof Profile, value: string) => {
-    setProfileData((prev) => (prev ? { ...prev, [field]: value } : prev))
-  }
+  const updateField = useCallback((field: keyof Profile, value: string) => {
+    setProfileData((prev) => (prev ? { ...prev, [field]: value } : prev));
+  }, []);
 
   if (!profileData || loading) {
     return (
@@ -98,7 +89,7 @@ const ProfileScreen = () => {
   }
 
   return (
-    <ScrollView className="flex-1 min-h-screen-safe bg-white">
+    <ScrollView className="flex-1 bg-white">
       {isUploadingImage && (
         <View className="absolute w-screen h-screen inset-0 bg-black/50 z-50 flex-1 justify-center items-center">
           <View className="bg-white rounded-xl p-6 items-center">
@@ -110,8 +101,8 @@ const ProfileScreen = () => {
 
       <View className="flex-1">
         {/* Header */}
-        <View className="flex-row items-center justify-between p-4 pt-12">
-          <TouchableOpacity>
+        <View className="flex-row items-center justify-between p-4 mt-3">
+          <TouchableOpacity onPress={() => { router.back() }}>
             <Feather name="arrow-left" size={24} color="#374151" />
           </TouchableOpacity>
           <Text className="text-lg font-semibold text-gray-900">Profile</Text>
@@ -123,7 +114,7 @@ const ProfileScreen = () => {
         {/* Profile Image Section */}
         <View className="items-center py-6">
           <View className="relative">
-            <Image source={{ uri: profileData.profileImage }} className="w-24 h-24 rounded-full" />
+            <Image source={{ uri: profileData.profileImage || undefined }} className="w-24 h-24 rounded-full" defaultSource={require("../../assets/images/logo/default_profile.png")} />
             {isEditing && (
               <TouchableOpacity
                 onPress={handleImagePicker}

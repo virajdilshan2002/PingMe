@@ -3,7 +3,8 @@ import { useAuth } from "@/context/AuthContext"
 import { MaterialIcons } from "@expo/vector-icons"
 import { Tabs, useRouter } from "expo-router"
 import React, { useEffect } from "react"
-import { ActivityIndicator, View } from "react-native"
+import { ActivityIndicator, TouchableOpacity, View } from "react-native"
+
 
 const DashboardLayout = () => {
   const router = useRouter()
@@ -24,24 +25,35 @@ const DashboardLayout = () => {
   }
 
   return (
-    <View className="flex-1 bg-white">
+    <View className="flex-1">
       <Header />
       <Tabs
         screenOptions={{
           headerShown: false,
+          tabBarButton(props) {
+            const { delayLongPress, ...restProps } = props as any;
+            return (
+              <TouchableOpacity
+                activeOpacity={1}
+                {...(delayLongPress != null ? { delayLongPress } : {})}
+                {...restProps}
+              />
+            )
+          },
           tabBarActiveTintColor: "orange",
           tabBarInactiveTintColor: "#737373",
           tabBarStyle: {
+            borderTopWidth: 0.5,
             backgroundColor: "#ffffff",
-            marginBottom: 0,
-            height: 100,
+            marginTop: 0,
+            height: 60,
+            paddingTop: 4,
+            shadowColor: "transparent",
           },
-          tabBarLabelStyle: {
-            fontSize: 10
-          },
-          tabBarIconStyle: {
-            marginTop: 3
+          tabBarItemStyle: {
+            height: 30,
           }
+          
         }}
       >
         <Tabs.Screen
@@ -51,32 +63,6 @@ const DashboardLayout = () => {
             tabBarIcon: (data) => (
               <MaterialIcons
                 name="chat"
-                size={data.size}
-                color={data.color}
-              />
-            )
-          }}
-        />
-        <Tabs.Screen
-          name="profile"
-          options={{
-            title: "Profile",
-            tabBarIcon: (data) => (
-              <MaterialIcons
-                name="person"
-                size={data.size}
-                color={data.color}
-              />
-            )
-          }}
-        />
-        <Tabs.Screen
-          name="setting"
-          options={{
-            title: "Setting",
-            tabBarIcon: (data) => (
-              <MaterialIcons
-                name="settings"
                 size={data.size}
                 color={data.color}
               />
