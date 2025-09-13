@@ -2,7 +2,7 @@ import ChatList from "@/components/ChatList";
 import { useAuth } from "@/context/AuthContext";
 import { getUsers } from "@/services/userProfileService";
 import React, { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
 
 const Chats = () => {
   const { user } = useAuth();
@@ -13,7 +13,7 @@ const Chats = () => {
     const fetchUsers = async () => {
       if (!user?.uid) return;
       try {
-        const res = await getUsers(user.uid); // pass current user uid if needed
+        const res = await getUsers(user.uid); 
         setUsers(res || []);
       } catch (err) {
         console.log("Error fetching users:", err);
@@ -28,7 +28,9 @@ const Chats = () => {
   return (
     <View className="flex-1 w-full bg-white">
       {loading ? (
-        <Text className="text-center text-lg mt-10">Loading...</Text>
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color="orange" />
+        </View>
       ) : users.length > 0 ? (
         <ChatList />
       ) : (

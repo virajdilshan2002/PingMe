@@ -52,13 +52,16 @@ const ProfileScreen = () => {
         return;
       }
     }
+
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 1,
     });
+
     if (result.canceled) return;
     const imageUri = result.assets[0].uri;
+
     try {
       if (!user) {
         Alert.alert("Error", "User not found");
@@ -74,6 +77,7 @@ const ProfileScreen = () => {
     } finally {
       setIsUploadingImage(false);
     }
+    
   }, [mediaPermission, requestMediaPermission, user]);
 
   const updateField = useCallback((field: keyof Profile, value: string) => {

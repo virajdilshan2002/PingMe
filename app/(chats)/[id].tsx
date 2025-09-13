@@ -1,5 +1,6 @@
 import { DATA_KEY } from "@/constants";
 import { db } from "@/firebase";
+import { getChatId } from "@/services/messageService";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -30,25 +31,21 @@ interface Message {
   timestamp: Date;
 }
 
-const getChatId = (uid1: string, uid2: string) => {
-  return [uid1, uid2].sort().join("_"); // ensures same chatId for both users
-};
-
 const ChatScreen = () => {
   const router = useRouter();
   const scrollRef = useRef<ScrollView>(null);
 
-  const { id, name, avatar } = useLocalSearchParams<{
+  const { id, name, profileImage } = useLocalSearchParams<{
     id: string;
     name: string;
-    avatar: string;
+    profileImage: string;
   }>();
 
-  const contactInfo = { id, name, avatar };
+  const contactInfo = { id, name, profileImage };
 
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [currentUser, setCurrentUser] = useState<{ uid: string; name: string; avatar: string } | null>(null);
+  const [currentUser, setCurrentUser] = useState<{ uid: string; name: string; profileImage: string } | null>(null);
   const [sending, setSending] = useState(false);
 
   // Load logged-in user
@@ -127,13 +124,8 @@ const ChatScreen = () => {
           </TouchableOpacity>
 
           <View className="flex-row items-center flex-1 ml-3">
-            <View className="relative">
-              <Image source={{ uri: contactInfo.avatar }} className="w-10 h-10 rounded-full" />
-              <View className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-accent rounded-full border-2 border-background" />
-            </View>
-            <View className="ml-3 flex-1">
-              <Text className="text-foreground font-semibold text-lg font-sans">{contactInfo.name}</Text>
-            </View>
+            <Image source={ contactInfo?.profileImage ? { uri: contactInfo.profileImage } : require("../../assets/images/logo/default_profile.png") } className="rounded-full w-10 h-10" />
+            <Text className="text-foreground font-semibold text-lg font-sans ml-2">{contactInfo.name}</Text>
           </View>
 
           <TouchableOpacity className="p-2">
@@ -144,7 +136,7 @@ const ChatScreen = () => {
         {/* Messages Area */}
         <ScrollView
           ref={scrollRef}
-          contentContainerStyle={{ flexGrow: 1, padding: 16 }}
+          contentContainerStyle={{ flexGrow: 1, padding: 10 }}
           showsVerticalScrollIndicator={false}
         >
           {messages.map(msg => {
@@ -152,7 +144,7 @@ const ChatScreen = () => {
             return (
               <View key={msg.id} className={`mb-4 ${isMe ? "items-end" : "items-start"}`}>
                 <View
-                  className={`max-w-[80%] px-4 py-3 rounded-2xl ${isMe ? "bg-primary rounded-br-md" : "bg-secondary rounded-bl-md"}`}
+                  className={`max-w-[80%] px-4 py-3 ${isMe ? "bg-orange-300 rounded-2xl rounded-br-md" : "bg-zinc-300 rounded-2xl rounded-bl-md"}`}
                 >
                   <Text className={`text-base font-sans ${isMe ? "text-primary-foreground" : "text-secondary-foreground"}`}>
                     {msg.text}
@@ -196,6 +188,7 @@ const ChatScreen = () => {
       </KeyboardAvoidingView>
     </View>
   );
+
 };
 
 export default ChatScreen;

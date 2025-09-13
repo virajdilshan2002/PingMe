@@ -11,6 +11,8 @@ export default function ChatItem({ item, currentUser, noBorder }: ChatItemProps)
   const router = useRouter()
   if (!currentUser) return null
 
+  // console.log("Rendering ChatItem for user:", item);
+
   return (
     <TouchableOpacity
       onPress={() =>
@@ -19,21 +21,18 @@ export default function ChatItem({ item, currentUser, noBorder }: ChatItemProps)
           params: {
             id: item.uid,
             name: item.name,
-            avatar: item.avatar,
+            profileImage: item.profileImage,
           },
         })
       }
-      className={`flex-row w-full px-3 py-2 ${noBorder ? "" : "border-b border-gray-200"}`}
+      className={`flex-row w-full bg-zinc-100 px-3 py-2 ${noBorder ? "" : "border-b border-gray-200"}`}
     >
       <Image
-        source={item.avatar ? { uri: item.avatar } : require("../assets/images/logo/default_profile.png")}
+        source={item.profileImage ? { uri: item.profileImage } : require("../assets/images/logo/default_profile.png")}
         className="w-12 h-12 rounded-full"
       />
       <View className="flex-1 ml-3 justify-center">
         <Text className="text-lg font-semibold">{item.name}</Text>
-        <Text className="text-sm text-gray-500" numberOfLines={1}>
-          {/* lastMessage can be added later */}
-        </Text>
       </View>
     </TouchableOpacity>
   )

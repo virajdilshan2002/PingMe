@@ -35,3 +35,7 @@ export const getAllMessageData = async () => {
   })) as Message[]
   return messageList
 }
+
+export const getChatId = (uid1: string, uid2: string) => {
+  return [uid1, uid2].sort().join("_"); // ensures same chatId for both users
+};

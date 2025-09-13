@@ -15,8 +15,10 @@ export default function ChatList() {
       if (!userData) return
       const parsed = JSON.parse(userData)
       setCurrentUser(parsed)
+      
       const fetchedUsers = await getUsers(parsed.uid)
       setUsers(fetchedUsers)
+      
     }
     loadUserAndUsers()
   }, [])
