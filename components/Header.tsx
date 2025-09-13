@@ -115,6 +115,14 @@ export default function Header() {
                   onPress={() => {
                     setShowSearchPopup(false);
                     setSearchKeyword(user.name);
+                    router.push({
+                      pathname: "/(chats)/[id]",
+                      params: {
+                      id: user.id,
+                      name: user.name,
+                      avatar: user.profileImage,
+                      },
+                    });
                   }}
                 >
                   <Image source={{ uri: user.profileImage }} className="w-9 h-9 rounded-full mr-2" />

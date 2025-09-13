@@ -1,6 +1,8 @@
+import { DATA_KEY } from "@/constants"
 import { auth } from "@/firebase"
 import { login } from "@/services/authService"
 import { Ionicons } from "@expo/vector-icons"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 import { useRouter } from "expo-router"
 import { useState } from "react"
 import { ActivityIndicator, Alert, Image, Pressable, Text, TextInput, TouchableOpacity, View } from "react-native"
@@ -30,7 +32,9 @@ const Login = () => {
       await auth.signOut()
       return
     }
-    
+    // save user info to async storage or context if needed
+    await AsyncStorage.setItem(DATA_KEY, JSON.stringify(res.user))
+    // Navigate to main app screen
     router.push("/chats")
   } catch (err: any) {
     console.error("Login error:", err)

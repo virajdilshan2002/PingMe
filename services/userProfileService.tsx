@@ -59,3 +59,11 @@ export const searchUser = async (keyword: string) => {
 
   return []
 }
+
+export const getUsers = async (excludeUserId: string) => {
+  const snapshot = await getDocs(collection(db, "users"))
+  const users = snapshot.docs
+    .map(doc => ({ uid: doc.id, ...doc.data() }))
+    .filter(u => u.uid !== excludeUserId)
+  return users
+}
