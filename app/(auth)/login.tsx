@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { useRouter } from "expo-router"
 import { useState } from "react"
-import { ActivityIndicator, Alert, Image, Pressable, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, Pressable, Text, TextInput, TouchableOpacity, View } from "react-native"
 
 const Login = () => {
   const router = useRouter()
@@ -58,12 +58,17 @@ const Login = () => {
 
 
   return (
-    <View className="flex-1 w-screen h-screen bg-white justify-center items-center px-6">
+    <View className="flex-1 w-screen h-screen bg-white items-center px-6">
+      <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "android" ? 40 : 0}
+          style={{ flex: 1 }}
+      >
       <View className="flex-1 flex-col justify-center h-full w-full max-w-sm max-h-screen-safe bg-card rounded-3xl">
         <Image source={require("../../assets/images/logo/app_logo.png")} className="max-w-24 max-h-24 mb-2 self-center rounded-full" />
         <Text className="text-3xl font-bold text-center text-foreground mb-4">Ping Me</Text>
-        <Text className="text-3xl text-center text-foreground mb-2">Welcome Back</Text>
-        <Text className="text-base text-center text-muted-foreground mb-8">Sign in to your account</Text>
+        <Text className="text-2xl text-center text-foreground mb-1">Welcome Back</Text>
+        <Text className="text-sm text-center text-muted-foreground mb-8">Log in to your account</Text>
 
         <View className="space-y-4">
           <View>
@@ -74,7 +79,7 @@ const Login = () => {
               onChangeText={setEmail}
               keyboardType="email-address"
               autoCapitalize="none"
-              className="bg-input border-2 text-center border-orange-200 rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-orange-300"
+              className="bg-input border-2 w-full text-center border-orange-200 rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-orange-300"
             />
           </View>
 
@@ -86,14 +91,14 @@ const Login = () => {
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
-              className="bg-input border-2 w-full text-center border-orange-200 rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-orange-300"
+              className="bg-input border-2 w-full text-center border-orange-200 rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-orange-300"
               />
               <TouchableOpacity className="absolute right-3" onPress={() => setShowPassword(!showPassword)}>
                 <Ionicons
                   className="bg-zinc-100 rounded-full p-1"
                   name={showPassword ? "eye-off" : "eye"}
                   size={22}
-                  color="#666"
+                  color="#9ca3af"
                 />
               </TouchableOpacity>
             </View>
@@ -103,17 +108,17 @@ const Login = () => {
         <TouchableOpacity
           onPress={handleLogin}
           disabled={isLoading}
-          className={`mt-6 rounded-lg py-4 px-6 ${
+          className={`mt-6 rounded-xl w-56 self-center bg-orange-200 py-4 px-6 ${
             isLoading ? "bg-muted" : "bg-primary active:bg-primary/90"
           } shadow-sm`}
         >
           {isLoading ? (
             <View className="flex-row items-center justify-center">
               <ActivityIndicator color="orange" size="small" />
-              <Text className="text-primary-foreground font-semibold text-base ml-2">Signing in...</Text>
+              <Text className="text-primary-foreground font-semibold text-base ml-2">Logging in...</Text>
             </View>
           ) : (
-            <Text className="text-primary-foreground font-semibold text-base text-center">Sign In</Text>
+            <Text className="text-primary-foreground font-semibold text-base text-center">Log In</Text>
           )}
         </TouchableOpacity>
 
@@ -127,6 +132,7 @@ const Login = () => {
           <Text className="text-center text-accent text-sm font-medium">Forgot your password?</Text>
         </Pressable>
       </View>
+      </KeyboardAvoidingView>
     </View>
   )
 }
