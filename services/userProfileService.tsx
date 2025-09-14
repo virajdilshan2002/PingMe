@@ -1,6 +1,6 @@
 import { Profile } from "@/types/profile"
 import { getAuth } from "firebase/auth"
-import { collection, doc, getDoc, getDocs, getFirestore, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore"
+import { collection, doc, getDoc, getDocs, getFirestore, onSnapshot, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore"
 
 const auth = getAuth()
 const db = getFirestore()
@@ -33,7 +33,7 @@ export const createDefaultProfile = async (id: string, email: string) => {
     createdAt: serverTimestamp(),
     email,
     name: "User",
-    profileImage: "default_profile.png",
+    profileImage: "",
     updatedAt: serverTimestamp()
   })
 }
@@ -60,10 +60,39 @@ export const searchUser = async (keyword: string) => {
   return []
 }
 
-export const getUsers = async (excludeUserId: string) => {
-  const snapshot = await getDocs(collection(db, "users"))
-  const users = snapshot.docs
-    .map(doc => ({ uid: doc.id, ...doc.data() }))
-    .filter(u => u.uid !== excludeUserId)
-  return users
+export const subscribeChattedUsers = (
+  currentUserId: string,
+  callback: (users: any[]) => void
+    ) => {
+  const q = query(
+    collection(db, "chats"),
+    where("participants", "array-contains", currentUserId)
+  )
+
+  const unsub = onSnapshot(q, async (snapshot) => {
+    const userIds = new Set<string>()
+    snapshot.forEach(doc => {
+      const data = doc.data()
+      data.participants.forEach((uid: string) => {
+        if (uid !== currentUserId) userIds.add(uid)
+      })
+    })
+
+    if (userIds.size === 0) {
+      callback([])
+      return
+    }
+
+    const usersCol = collection(db, "users")
+    const usersSnap = await getDocs(usersCol)
+    const users = usersSnap.docs
+      .map(doc => ({ uid: doc.id, ...doc.data() }))
+      .filter(u => userIds.has(u.uid))
+
+    callback(users)
+  })
+
+  return unsub
 }
+
+      

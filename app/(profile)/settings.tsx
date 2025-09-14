@@ -28,10 +28,10 @@ const SettingScreen = () => {
         <View style={{ width: 40 }} />
       </View>
 
-      <View className="px-4 mt-8">
+      <View className="flex-row justify-center w-full px-4 mt-8">
         <TouchableOpacity
           onPress={handleLogout}
-          className="bg-red-500 rounded-lg py-3"
+          className="bg-red-500 rounded-3xl w-56 py-3"
         >
           <Text className="text-center text-white font-medium">Logout</Text>
         </TouchableOpacity>

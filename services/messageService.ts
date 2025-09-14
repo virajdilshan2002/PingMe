@@ -5,6 +5,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   getDocs,
   updateDoc
 } from "firebase/firestore"
@@ -37,5 +38,18 @@ export const getAllMessageData = async () => {
 }
 
 export const getChatId = (uid1: string, uid2: string) => {
-  return [uid1, uid2].sort().join("_"); // ensures same chatId for both users
+  return [uid1, uid2].sort().join("_");
 };
+
+export const getChatData = async (uid1: string, uid2: string) => {
+  const chatId = getChatId(uid1, uid2)
+  const chatRef = doc(db, "chats", chatId)
+  const chatSnap = await getDoc(chatRef)
+
+  if (chatSnap.exists()) {
+    const data = chatSnap.data()
+    return data
+  }
+
+  return null
+}

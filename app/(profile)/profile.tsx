@@ -45,40 +45,41 @@ const ProfileScreen = () => {
   }, [user, profileData]);
 
   const handleImagePicker = useCallback(async () => {
-    if (!mediaPermission || !mediaPermission.granted) {
-      const perm = await requestMediaPermission();
-      if (!perm?.granted) {
-        Alert.alert("Permission", "Permission to access gallery is required!");
-        return;
-      }
+  // ask ImagePicker permission, not MediaLibrary
+  const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  if (status !== "granted") {
+    Alert.alert("Permission required", "We need access to your photos!");
+    return;
+  }
+
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsEditing: true,
+    aspect: [1, 1],
+    quality: 1,
+  });
+
+  if (result.canceled) return;
+
+  const imageUri = result.assets[0].uri;
+
+  try {
+    if (!user) {
+      Alert.alert("Error", "User not found");
+      return;
     }
+    setIsUploadingImage(true);
+    const url = await uploadProfileImage(imageUri, user.uid);
+    await saveProfileImageUrl(user.uid, url);
+    setProfileData((prev) => (prev ? { ...prev, profileImage: url } : prev));
+  } catch (error) {
+    console.log(error);
+    Alert.alert("Error", "Failed to upload image");
+  } finally {
+    setIsUploadingImage(false);
+  }
+}, [user]);
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 1,
-    });
-
-    if (result.canceled) return;
-    const imageUri = result.assets[0].uri;
-
-    try {
-      if (!user) {
-        Alert.alert("Error", "User not found");
-        return;
-      }
-      setIsUploadingImage(true);
-      const url = await uploadProfileImage(imageUri, user.uid);
-      await saveProfileImageUrl(user.uid, url);
-      setProfileData((prev) => (prev ? { ...prev, profileImage: url } : prev));
-    } catch (error) {
-      console.log(error);
-      Alert.alert("Error", "Failed to upload image");
-    } finally {
-      setIsUploadingImage(false);
-    }
-    
-  }, [mediaPermission, requestMediaPermission, user]);
 
   const updateField = useCallback((field: keyof Profile, value: string) => {
     setProfileData((prev) => (prev ? { ...prev, [field]: value } : prev));
@@ -111,14 +112,14 @@ const ProfileScreen = () => {
           </TouchableOpacity>
           <Text className="text-lg font-semibold text-gray-900">Profile</Text>
           <TouchableOpacity onPress={() => (isEditing ? handleSave() : setIsEditing(true))}>
-            <Text className="text-emerald-600 font-medium">{isEditing ? "Save" : "Edit"}</Text>
+            <Text className="text-emerald-600 font-medium px-2 py-1 rounded-2xl" style={isEditing ? { backgroundColor: "#D1FAE5" } : {}}>{isEditing ? "Save" : "Edit"}</Text>
           </TouchableOpacity>
         </View>
 
         {/* Profile Image Section */}
         <View className="items-center py-6">
           <View className="relative">
-            <Image source={{ uri: profileData.profileImage || undefined }} className="w-24 h-24 rounded-full" defaultSource={require("../../assets/images/logo/default_profile.png")} />
+            <Image source={ profileData?.profileImage ? { uri: profileData.profileImage } : require("../../assets/images/logo/default_profile.png")} className="w-24 h-24 rounded-full" />
             {isEditing && (
               <TouchableOpacity
                 onPress={handleImagePicker}
@@ -137,22 +138,22 @@ const ProfileScreen = () => {
       </View>
 
       {/* Profile Details */}
-      <View className="bg-white mt-4 mx-4 rounded-xl shadow-sm">
+      <View className="bg-white mt-4 mx-2 rounded-xl shadow-sm">
         <View className="p-4">
           <Text className="text-lg font-semibold text-gray-900 mb-4">Personal Information</Text>
 
           {/* Name Field */}
-          <View className="mb-4">
-            <Text className="text-sm font-medium text-gray-700 mb-2">Full Name</Text>
+          <View className="mb-2">
+            <Text className="text-sm font-medium text-gray-700 mb-2">User Name</Text>
             {isEditing ? (
               <TextInput
                 value={profileData.name}
                 onChangeText={(text) => updateField("name", text)}
-                className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-3 text-gray-900"
-                placeholder="Enter your full name"
+                className="border-2 rounded-xl px-3 border-gray-400 p-3 text-gray-900"
+                placeholder="Enter your user name"
               />
             ) : (
-              <Text className="text-gray-900 py-3">{profileData.name}</Text>
+              <Text className="border-2 rounded-xl p-3 border-gray-300 text-gray-900">{profileData.name}</Text>
             )}
           </View>
         </View>
@@ -160,9 +161,9 @@ const ProfileScreen = () => {
 
       {/* Cancel Button */}
       {isEditing && (
-        <View className="mx-4 mt-4 mb-8">
-          <TouchableOpacity onPress={() => setIsEditing(false)} className="bg-gray-200 rounded-lg py-3 mb-3">
-            <Text className="text-center text-gray-700 font-medium">Cancel</Text>
+        <View className="flex-row justify-center">
+          <TouchableOpacity onPress={() => setIsEditing(false)} className="bg-red-500 w-56 rounded-lg py-3 mb-3">
+            <Text className="text-center text-white font-medium">Cancel</Text>
           </TouchableOpacity>
         </View>
       )}

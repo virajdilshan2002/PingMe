@@ -7,10 +7,13 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   addDoc,
   collection,
+  doc,
+  getDoc,
   onSnapshot,
   orderBy,
   query,
-  serverTimestamp
+  serverTimestamp,
+  setDoc
 } from "firebase/firestore";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
@@ -43,6 +46,8 @@ const ChatScreen = () => {
 
   const contactInfo = { id, name, profileImage };
 
+  const decodedImage = profileImage ? decodeURIComponent(profileImage as string) : null
+
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentUser, setCurrentUser] = useState<{ uid: string; name: string; profileImage: string } | null>(null);
@@ -59,24 +64,40 @@ const ChatScreen = () => {
     loadUser();
   }, []);
 
-  // Send a message
   const sendMessage = async () => {
-    if (!message.trim() || !currentUser || sending) return;
-    setSending(true);
-    try {
-      const chatId = getChatId(currentUser.uid, contactInfo.id);
-      await addDoc(collection(db, "chats", chatId, "messages"), {
-        text: message.trim(),
-        sender: currentUser.uid,
-        timestamp: serverTimestamp()
+  if (!message.trim() || !currentUser || sending) return;
+  setSending(true);
+
+  try {
+    const chatId = getChatId(currentUser.uid, contactInfo.id);
+
+    const chatRef = doc(db, "chats", chatId);
+    const chatSnap = await getDoc(chatRef);
+    if (!chatSnap.exists()) {
+      await setDoc(chatRef, {
+        participants: [currentUser.uid, contactInfo.id],
+        createdAt: serverTimestamp(),
+        lastMessageTime: serverTimestamp(),
+        lastMessage: message.trim()
       });
-      setMessage("");
-    } catch (error) {
-      console.log("Error sending message:", error);
-    } finally {
-      setSending(false);
+    } else {
+      await setDoc(chatRef, { lastMessage: message.trim(), lastMessageTime: serverTimestamp() }, { merge: true });
+
     }
-  };
+
+    await addDoc(collection(chatRef, "messages"), {
+      text: message.trim(),
+      sender: currentUser.uid,
+      timestamp: serverTimestamp()
+    });
+
+    setMessage("");
+  } catch (error) {
+    console.log("Error sending message:", error);
+  } finally {
+    setSending(false);
+  }
+};
 
   // Format timestamp
   const formatTime = (date: Date) => {
@@ -110,6 +131,8 @@ const ChatScreen = () => {
     return unsubscribe;
   }, [currentUser, contactInfo.id]);
 
+  // console.log("Contact info: ", contactInfo);
+
   return (
     <View className="flex-1 bg-background">
       <KeyboardAvoidingView
@@ -125,7 +148,11 @@ const ChatScreen = () => {
 
           <View className="flex-row items-center flex-1 ml-3">
             <Image source={ contactInfo?.profileImage ? { uri: contactInfo.profileImage } : require("../../assets/images/logo/default_profile.png") } className="rounded-full w-10 h-10" />
-            <Text className="text-foreground font-semibold text-lg font-sans ml-2">{contactInfo.name}</Text>
+            <View>
+              <Text className="text-foreground font-semibold text-lg font-sans ml-2">{contactInfo.name}</Text>
+              <Text className="text-xs text-gray-400 ml-2">{contactInfo.id}</Text>
+            </View>
+            
           </View>
 
           <TouchableOpacity className="p-2">
@@ -179,7 +206,7 @@ const ChatScreen = () => {
             disabled={!message.trim() || sending}
           >
             {sending ? (
-              <Text className="text-xs text-black">Sending...</Text>
+              <Ionicons name="send" size={18} color="#6b7280" />
             ) : (
               <Ionicons name="send" size={18} color="black" />
             )}
