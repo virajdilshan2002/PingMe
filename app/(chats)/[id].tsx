@@ -150,7 +150,7 @@ const ChatScreen = () => {
             <Image source={ contactInfo?.profileImage ? { uri: contactInfo.profileImage } : require("../../assets/images/logo/default_profile.png") } className="rounded-full w-10 h-10" />
             <View>
               <Text className="text-foreground font-semibold text-lg font-sans ml-2">{contactInfo.name}</Text>
-              <Text className="text-xs text-gray-400 ml-2">{contactInfo.id}</Text>
+              {/* <Text className="text-xs text-gray-400 ml-2">{contactInfo.id}</Text> */}
             </View>
             
           </View>

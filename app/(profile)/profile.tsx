@@ -13,8 +13,8 @@ const ProfileScreen = () => {
   const { user, loading } = useAuth()
   const [isEditing, setIsEditing] = useState(false)
   const [profileData, setProfileData] = useState<Profile | null>(null)
-  const [mediaPermission, requestMediaPermission] = MediaLibrary.usePermissions()
-  const [photo, setPhoto] = useState<any>(null)
+  // const [mediaPermission, requestMediaPermission] = MediaLibrary.usePermissions()
+  // const [photo, setPhoto] = useState<any>(null)
   const [isUploadingImage, setIsUploadingImage] = useState(false)
   const router = useRouter()
 
