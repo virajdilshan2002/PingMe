@@ -1,6 +1,6 @@
 # PingMe 📱
 
-PingMe is a React Native chat app built with **Expo SDK 54**, **Expo Router**, and **Firebase (Auth, Firestore, Storage)**.  
+PingMe is a React Native chat app built with **Expo SDK 54**, **Expo Router**, and **Firebase (Auth, Firestore, Storage).  
 Supports Android
 
 ---
@@ -25,7 +25,14 @@ Remove-Item -Force package-lock.json
 ```
 
 #### Build
+
 ```sh
 npm install -g eas-cli && eas login
 eas build --platform android --profile production
 ```
+
+
+## References
+
+Apk build - https://expo.dev/artifacts/eas/mcMNp7d7EfMQTZQtWukohF.apk?authuser=0  
+Screen Record - https://youtube.com/shorts/A88YYuHCmdA?si=PrRwQsV-6RBSIsVT
