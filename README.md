@@ -35,4 +35,3 @@ eas build --platform android --profile production
 ## References
 
 Apk build - https://expo.dev/artifacts/eas/mcMNp7d7EfMQTZQtWukohF.apk?authuser=0  
-Screen Record - https://youtube.com/shorts/A88YYuHCmdA?si=PrRwQsV-6RBSIsVT
