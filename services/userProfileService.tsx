@@ -1,8 +1,9 @@
+import { auth } from "@/firebase"
 import { Profile } from "@/types/profile"
-import { getAuth } from "firebase/auth"
+// import { getAuth } from "firebase/auth"
 import { collection, doc, getDoc, getDocs, getFirestore, onSnapshot, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore"
 
-const auth = getAuth()
+// const auth = getAuth()
 const db = getFirestore()
 
 export const fetchProfile = async (id: string) => {

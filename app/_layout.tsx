@@ -7,6 +7,7 @@ import { useColorScheme } from "react-native";
 import "./../global.css";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+
 const RootLayout = () => {
   const theme = useColorScheme();
 
