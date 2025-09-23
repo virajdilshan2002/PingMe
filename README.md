@@ -31,7 +31,3 @@ npm install -g eas-cli && eas login
 eas build --platform android --profile production
 ```
 
-
-## References
-
-Apk build - https://expo.dev/artifacts/eas/mcMNp7d7EfMQTZQtWukohF.apk?authuser=0  
