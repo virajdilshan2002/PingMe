@@ -32,5 +32,5 @@ eas build --platform android --profile production
 ```
 
 ## Download APK
-👉 [Click here to download the APK](./PingMe.apk)
+👉 [Click here to download the APK](https://expo.dev/artifacts/eas/v226H3RLGw1n4rGzcfL4aV.apk)
 
